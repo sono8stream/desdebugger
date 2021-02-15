@@ -26,12 +26,12 @@ namespace desdebugger.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("\"\"")]
-        public string BreakAdrs {
+        public string BreakAddrs {
             get {
-                return ((string)(this["BreakAdrs"]));
+                return ((string)(this["BreakAddrs"]));
             }
             set {
-                this["BreakAdrs"] = value;
+                this["BreakAddrs"] = value;
             }
         }
     }

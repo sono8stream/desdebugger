@@ -27,37 +27,37 @@ namespace desdebugger
         private uint memoryAdr;
         private uint[] registers;
 
-        private List<string> breakAdrs;
+        private List<string> breakAddrs;
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //breakAdrs = Properties.Settings.Default.BreakAdrs.Split().ToList();
-            breakAdrs = new List<string>();
-            if (breakAdrs.Count == 1)
+            //breakAddrs = Properties.Settings.Default.breakAddrs.Split().ToList();
+            breakAddrs = new List<string>();
+            if (breakAddrs.Count == 1)
             {
-                breakAdrs.Clear();
+                breakAddrs.Clear();
             }
             else
             {
                 var source = new AutoCompleteStringCollection();
-                source.AddRange(breakAdrs.ToArray());
+                source.AddRange(breakAddrs.ToArray());
                 textBoxBp.AutoCompleteCustomSource = source;
             }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            string adrsStr = "";
-            for(int i = 0; i < breakAdrs.Count; i++)
+            string addrsStr = "";
+            for(int i = 0; i < breakAddrs.Count; i++)
             {
-                adrsStr += breakAdrs[i];
-                if (i + 1 < breakAdrs.Count)
+                addrsStr += breakAddrs[i];
+                if (i + 1 < breakAddrs.Count)
                 {
-                    adrsStr += " ";
+                    addrsStr += " ";
                 }
             }
-            Properties.Settings.Default.BreakAdrs = adrsStr;
-            //Properties.Settings.Default.Save();
+            Properties.Settings.Default.BreakAddrs = addrsStr;
+            Properties.Settings.Default.Save();
         }
 
         private void buttonLaunch_Click(object sender, EventArgs e)
@@ -354,9 +354,9 @@ namespace desdebugger
         private void buttonBp_click(object sender, EventArgs e)
         {
             statusLabel.Text = $"Set break point at {textBoxBp.Text}";
-            breakAdrs.Add(textBoxBp.Text);
+            breakAddrs.Add(textBoxBp.Text);
             var source = new AutoCompleteStringCollection();
-            source.AddRange(breakAdrs.ToArray());
+            source.AddRange(breakAddrs.ToArray());
             textBoxBp.AutoCompleteCustomSource = source;
             Interact(String.Format("Z0,{0:x8},4", Convert.ToUInt32(textBoxBp.Text, 16)));
         }
