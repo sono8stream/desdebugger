@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace desdebugger
 {
@@ -27,37 +24,18 @@ namespace desdebugger
         private uint memoryAdr;
         private uint[] registers;
 
-        private List<string> breakAddrs;
+        private Process emulatorProcess;
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //breakAddrs = Properties.Settings.Default.breakAddrs.Split().ToList();
-            breakAddrs = new List<string>();
-            if (breakAddrs.Count == 1)
-            {
-                breakAddrs.Clear();
-            }
-            else
-            {
-                var source = new AutoCompleteStringCollection();
-                source.AddRange(breakAddrs.ToArray());
-                textBoxBp.AutoCompleteCustomSource = source;
-            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            string addrsStr = "";
-            for(int i = 0; i < breakAddrs.Count; i++)
+            if (emulatorProcess != null)
             {
-                addrsStr += breakAddrs[i];
-                if (i + 1 < breakAddrs.Count)
-                {
-                    addrsStr += " ";
-                }
+                emulatorProcess.Kill();
             }
-            Properties.Settings.Default.BreakAddrs = addrsStr;
-            Properties.Settings.Default.Save();
         }
 
         private void buttonLaunch_Click(object sender, EventArgs e)
@@ -66,20 +44,20 @@ namespace desdebugger
                 Filter = "Exe file (*.exe)|*.exe",
                 Title = "Open DeSmuME (only dev+ edition is supported)" 
             };
-            dialog.ShowDialog();
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
                     string filePath = dialog.FileName;
-                    System.Diagnostics.Process.Start(filePath, "--arm9gdb " + GetPortNumber());
-                    statusLabel.Text = "Emulater is enabled. But not connected";
+                    emulatorProcess = Process.Start(filePath, "--arm9gdb " + GetPortNumber());
+                    statusLabel.Text = "Emulator is enabled. But not connected";
                 }
                 catch (Exception ex)
                 {
                     statusLabel.Text = ex.Message;
                 }
             }
+            dialog.Dispose();
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
@@ -279,6 +257,7 @@ namespace desdebugger
         private void buttonContinue_Click(object sender, EventArgs e)
         {
             statusLabel.Text = "Started to Trace";
+            
             buttonContinue.Enabled = false;
 
             var progress = new Progress<bool>((done)=> {
@@ -297,6 +276,12 @@ namespace desdebugger
                 p.Report(true);
             };
             Task.Run(() => work(progress, "c"));
+            
+            /*
+            Interact("c");
+            UpdateRegisters();
+            Goto(registers[15]);
+            */
         }
 
         private void buttonStep_Click(object sender, EventArgs e)
@@ -354,10 +339,6 @@ namespace desdebugger
         private void buttonBp_click(object sender, EventArgs e)
         {
             statusLabel.Text = $"Set break point at {textBoxBp.Text}";
-            breakAddrs.Add(textBoxBp.Text);
-            var source = new AutoCompleteStringCollection();
-            source.AddRange(breakAddrs.ToArray());
-            textBoxBp.AutoCompleteCustomSource = source;
             Interact(String.Format("Z0,{0:x8},4", Convert.ToUInt32(textBoxBp.Text, 16)));
         }
 

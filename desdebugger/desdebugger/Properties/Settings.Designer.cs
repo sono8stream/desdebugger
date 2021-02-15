@@ -22,17 +22,5 @@ namespace desdebugger.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\"\"")]
-        public string BreakAddrs {
-            get {
-                return ((string)(this["BreakAddrs"]));
-            }
-            set {
-                this["BreakAddrs"] = value;
-            }
-        }
     }
 }

@@ -84,7 +84,8 @@
             // 
             // textBoxBp
             // 
-            this.textBoxBp.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.textBoxBp.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
+            this.textBoxBp.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.RecentlyUsedList;
             this.textBoxBp.Location = new System.Drawing.Point(99, 104);
             this.textBoxBp.Name = "textBoxBp";
             this.textBoxBp.Size = new System.Drawing.Size(127, 22);
