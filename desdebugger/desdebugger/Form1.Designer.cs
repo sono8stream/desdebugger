@@ -49,6 +49,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.listBoxDisasm = new System.Windows.Forms.ListBox();
+            this.statusLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -83,6 +84,7 @@
             // 
             // textBoxBp
             // 
+            this.textBoxBp.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.textBoxBp.Location = new System.Drawing.Point(99, 104);
             this.textBoxBp.Name = "textBoxBp";
             this.textBoxBp.Size = new System.Drawing.Size(127, 22);
@@ -117,11 +119,13 @@
             // 
             // textBoxPort
             // 
+            this.textBoxPort.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
+            this.textBoxPort.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.textBoxPort.Location = new System.Drawing.Point(53, 29);
             this.textBoxPort.Name = "textBoxPort";
             this.textBoxPort.Size = new System.Drawing.Size(100, 22);
             this.textBoxPort.TabIndex = 13;
-            this.textBoxPort.Text = "55555";
+            this.textBoxPort.Text = "80";
             // 
             // label3
             // 
@@ -212,7 +216,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(870, 456);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(870, 449);
             this.tableLayoutPanel1.TabIndex = 22;
             // 
             // listViewReg
@@ -223,9 +227,10 @@
             this.listViewReg.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader2,
             this.columnHeader1});
+            this.listViewReg.HideSelection = false;
             this.listViewReg.Location = new System.Drawing.Point(618, 3);
             this.listViewReg.Name = "listViewReg";
-            this.listViewReg.Size = new System.Drawing.Size(249, 450);
+            this.listViewReg.Size = new System.Drawing.Size(249, 443);
             this.listViewReg.TabIndex = 22;
             this.listViewReg.UseCompatibleStateImageBehavior = false;
             this.listViewReg.View = System.Windows.Forms.View.Details;
@@ -250,7 +255,7 @@
             this.vScrollBar1.Location = new System.Drawing.Point(595, 0);
             this.vScrollBar1.Maximum = 1000;
             this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(20, 456);
+            this.vScrollBar1.Size = new System.Drawing.Size(20, 449);
             this.vScrollBar1.TabIndex = 21;
             this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
             // 
@@ -268,11 +273,21 @@
             this.listBoxDisasm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBoxDisasm_KeyDown);
             this.listBoxDisasm.Resize += new System.EventHandler(this.listBoxDisasm_Resize);
             // 
+            // statusLabel
+            // 
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Location = new System.Drawing.Point(12, 588);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(86, 15);
+            this.statusLabel.TabIndex = 23;
+            this.statusLabel.Text = "Status Label";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(974, 601);
+            this.ClientSize = new System.Drawing.Size(974, 612);
+            this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.buttonRemove);
             this.Controls.Add(this.buttonStepOver);
@@ -291,6 +306,7 @@
             this.Controls.Add(this.buttonContinue);
             this.Name = "Form1";
             this.Text = "desdebugger";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -321,6 +337,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.VScrollBar vScrollBar1;
         private System.Windows.Forms.ListBox listBoxDisasm;
+        private System.Windows.Forms.Label statusLabel;
     }
 }
 

@@ -18,22 +18,68 @@ namespace desdebugger
             InitializeComponent();
         }
 
-        [DllImport("arm-disasm.dll")]
+        [DllImport("arm-disasm.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void Disasm(uint adr, uint ins, System.Text.StringBuilder str);
-        [DllImport("arm-disasm.dll")]
+        [DllImport("arm-disasm.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void DisasmThumb(uint adr, uint ins, System.Text.StringBuilder str);
 
         private System.Net.Sockets.TcpClient client;
         private uint memoryAdr;
         private uint[] registers;
 
+        private List<string> breakAdrs;
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            //breakAdrs = Properties.Settings.Default.BreakAdrs.Split().ToList();
+            breakAdrs = new List<string>();
+            if (breakAdrs.Count == 1)
+            {
+                breakAdrs.Clear();
+            }
+            else
+            {
+                var source = new AutoCompleteStringCollection();
+                source.AddRange(breakAdrs.ToArray());
+                textBoxBp.AutoCompleteCustomSource = source;
+            }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            string adrsStr = "";
+            for(int i = 0; i < breakAdrs.Count; i++)
+            {
+                adrsStr += breakAdrs[i];
+                if (i + 1 < breakAdrs.Count)
+                {
+                    adrsStr += " ";
+                }
+            }
+            Properties.Settings.Default.BreakAdrs = adrsStr;
+            //Properties.Settings.Default.Save();
         }
 
         private void buttonLaunch_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("desmume.exe", "--arm9gdb " + GetPortNumber());
+            var dialog = new OpenFileDialog() {
+                Filter = "Exe file (*.exe)|*.exe",
+                Title = "Open DeSmuME (only dev+ edition is supported)" 
+            };
+            dialog.ShowDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string filePath = dialog.FileName;
+                    System.Diagnostics.Process.Start(filePath, "--arm9gdb " + GetPortNumber());
+                    statusLabel.Text = "Emulater is enabled. But not connected";
+                }
+                catch (Exception ex)
+                {
+                    statusLabel.Text = ex.Message;
+                }
+            }
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
@@ -41,6 +87,7 @@ namespace desdebugger
             client = new System.Net.Sockets.TcpClient("localhost", GetPortNumber());
             UpdateRegisters();
             GotoWithUpdate(0x02000000);
+            statusLabel.Text = "Connected to DeSmuME";
         }
 
         private int GetPortNumber()
@@ -105,6 +152,14 @@ namespace desdebugger
         private void Goto(uint adr)
         {
             bool thumb = radioButtonThumb.Checked;
+
+            int currentIndex = listBoxDisasm.SelectedIndex;
+            if (currentIndex != -1)
+            {
+                string str = (string)listBoxDisasm.Items[currentIndex];
+                listBoxDisasm.Items[currentIndex] = str.Substring(2);
+            }
+
             if (memoryAdr <= adr && adr < memoryAdr + DISASM_LEN * (thumb ? 2 : 4))
             {
 
@@ -113,7 +168,15 @@ namespace desdebugger
             {
                 GotoWithUpdate(adr);
             }
+
             listBoxDisasm.SelectedIndex = (int)(adr - memoryAdr) / (thumb ? 2 : 4);
+            currentIndex = listBoxDisasm.SelectedIndex;
+            if (currentIndex != -1)
+            {
+                string str = (string)listBoxDisasm.Items[currentIndex];
+                listBoxDisasm.Items[currentIndex] = "> ";
+                listBoxDisasm.Items[currentIndex] += str;
+            }
         }
 
         private void UpdateRegisters()
@@ -215,9 +278,25 @@ namespace desdebugger
 
         private void buttonContinue_Click(object sender, EventArgs e)
         {
-            Interact("c");
-            UpdateRegisters();
-            Goto(registers[15]);
+            statusLabel.Text = "Started to Trace";
+            buttonContinue.Enabled = false;
+
+            var progress = new Progress<bool>((done)=> {
+                if (done)
+                {
+                    UpdateRegisters();
+                    Goto(registers[15]);
+                    statusLabel.Text = "Breaked";
+                    buttonContinue.Enabled = true;
+                }
+            });
+
+            Action<IProgress<bool>, string> work = (p, s) =>
+            {
+                Interact(s);
+                p.Report(true);
+            };
+            Task.Run(() => work(progress, "c"));
         }
 
         private void buttonStep_Click(object sender, EventArgs e)
@@ -244,14 +323,13 @@ namespace desdebugger
                     Interact("s");
                     pc = GetRegisters()[15];
                 } while (pc != targetPC);
-                Goto(pc);
             }
             else
             {
                 Interact("s");
-                UpdateRegisters();
-                Goto(registers[15]);
             }
+            UpdateRegisters();
+            Goto(registers[15]);
         }
 
         private bool getBranchAddr(uint addr, out uint destAdr, out string insName)
@@ -275,6 +353,11 @@ namespace desdebugger
 
         private void buttonBp_click(object sender, EventArgs e)
         {
+            statusLabel.Text = $"Set break point at {textBoxBp.Text}";
+            breakAdrs.Add(textBoxBp.Text);
+            var source = new AutoCompleteStringCollection();
+            source.AddRange(breakAdrs.ToArray());
+            textBoxBp.AutoCompleteCustomSource = source;
             Interact(String.Format("Z0,{0:x8},4", Convert.ToUInt32(textBoxBp.Text, 16)));
         }
 
