@@ -38,7 +38,6 @@
             this.textBoxPort = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.buttonLaunch = new System.Windows.Forms.Button();
-            this.buttonConnect = new System.Windows.Forms.Button();
             this.radioButtonARM = new System.Windows.Forms.RadioButton();
             this.radioButtonThumb = new System.Windows.Forms.RadioButton();
             this.buttonStepOver = new System.Windows.Forms.Button();
@@ -146,16 +145,6 @@
             this.buttonLaunch.Text = "Launch DeSmuME";
             this.buttonLaunch.UseVisualStyleBackColor = true;
             this.buttonLaunch.Click += new System.EventHandler(this.buttonLaunch_Click);
-            // 
-            // buttonConnect
-            // 
-            this.buttonConnect.Location = new System.Drawing.Point(315, 28);
-            this.buttonConnect.Name = "buttonConnect";
-            this.buttonConnect.Size = new System.Drawing.Size(75, 23);
-            this.buttonConnect.TabIndex = 16;
-            this.buttonConnect.Text = "Connect";
-            this.buttonConnect.UseVisualStyleBackColor = true;
-            this.buttonConnect.Click += new System.EventHandler(this.buttonConnect_Click);
             // 
             // radioButtonARM
             // 
@@ -294,7 +283,6 @@
             this.Controls.Add(this.buttonStepOver);
             this.Controls.Add(this.radioButtonThumb);
             this.Controls.Add(this.radioButtonARM);
-            this.Controls.Add(this.buttonConnect);
             this.Controls.Add(this.buttonLaunch);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBoxPort);
@@ -327,7 +315,6 @@
         private System.Windows.Forms.TextBox textBoxPort;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button buttonLaunch;
-        private System.Windows.Forms.Button buttonConnect;
         private System.Windows.Forms.RadioButton radioButtonARM;
         private System.Windows.Forms.RadioButton radioButtonThumb;
         private System.Windows.Forms.Button buttonStepOver;

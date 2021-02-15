@@ -50,7 +50,11 @@ namespace desdebugger
                 {
                     string filePath = dialog.FileName;
                     emulatorProcess = Process.Start(filePath, "--arm9gdb " + GetPortNumber());
-                    statusLabel.Text = "Emulator is enabled. But not connected";
+                    client = new System.Net.Sockets.TcpClient("localhost", GetPortNumber());
+                    UpdateRegisters();
+                    GotoWithUpdate(0x02000000);
+                    RunEmulator();
+                    statusLabel.Text = "Connected to DeSmuME";
                 }
                 catch (Exception ex)
                 {
@@ -58,14 +62,6 @@ namespace desdebugger
                 }
             }
             dialog.Dispose();
-        }
-
-        private void buttonConnect_Click(object sender, EventArgs e)
-        {
-            client = new System.Net.Sockets.TcpClient("localhost", GetPortNumber());
-            UpdateRegisters();
-            GotoWithUpdate(0x02000000);
-            statusLabel.Text = "Connected to DeSmuME";
         }
 
         private int GetPortNumber()
@@ -254,34 +250,33 @@ namespace desdebugger
             return (int)(sum % 256);
         }
 
-        private void buttonContinue_Click(object sender, EventArgs e)
+        private void RunEmulator()
         {
-            statusLabel.Text = "Started to Trace";
-            
             buttonContinue.Enabled = false;
 
-            var progress = new Progress<bool>((done)=> {
+            var progress = new Progress<bool>((done) => {
                 if (done)
                 {
                     UpdateRegisters();
                     Goto(registers[15]);
                     statusLabel.Text = "Breaked";
                     buttonContinue.Enabled = true;
+                    this.Focus();
                 }
             });
 
-            Action<IProgress<bool>, string> work = (p, s) =>
+            Action<IProgress<bool>> work = (p) =>
             {
-                Interact(s);
+                Interact("c");
                 p.Report(true);
             };
-            Task.Run(() => work(progress, "c"));
-            
-            /*
-            Interact("c");
-            UpdateRegisters();
-            Goto(registers[15]);
-            */
+            Task.Run(() => work(progress));
+        }
+
+        private void buttonContinue_Click(object sender, EventArgs e)
+        {
+            statusLabel.Text = "Started to Trace";
+            RunEmulator();
         }
 
         private void buttonStep_Click(object sender, EventArgs e)
