@@ -52,7 +52,7 @@ namespace desdebugger
                     emulatorProcess = Process.Start(filePath, "--arm9gdb " + GetPortNumber());
                     client = new System.Net.Sockets.TcpClient("localhost", GetPortNumber());
                     UpdateRegisters();
-                    GotoWithUpdate(0x02000000);
+                    Goto(0x02000000);
                     RunEmulator();
                     statusLabel.Text = "Connected to DeSmuME";
                 }
@@ -103,54 +103,37 @@ namespace desdebugger
             {
                 Disasm(adr, ins, buf);
             }
-            var str = String.Format("{0:x8} ", adr) + buf.ToString().ToLower();
+
+            string str = "";
+            if (registers[15] == adr)
+            {
+                str += "> ";
+            }
+            str += $"{adr:X8} {(thumb ? ins.ToString("X4") : ins.ToString("X8"))} " + buf.ToString().ToLower();
+
             var match = System.Text.RegularExpressions.Regex.Match(str, @"\[pc, #([0-9a-f]+)\]");
             if (match.Success)
             {
                 var ofs = Convert.ToInt32(match.Groups[1].Value, 16);
                 if (thumb)
                 {
-                    str = str.Substring(0, match.Index) + String.Format("#{0:x8}", GetMemory32((uint)(((adr + 4) & ~3) + ofs), 1)[0]);
+                    str = str.Substring(0, match.Index) + String.Format("#{0:X8}", GetMemory32((uint)(((adr + 4) & ~3) + ofs), 1)[0]);
                 }
             }
             return str;
         }
 
-        private void GotoWithUpdate(uint adr)
-        {
-            bool thumb = radioButtonThumb.Checked;
-            memoryAdr = (uint)(adr);
-            UpdateDisasm();
-        }
-
         private void Goto(uint adr)
         {
             bool thumb = radioButtonThumb.Checked;
-
-            int currentIndex = listBoxDisasm.SelectedIndex;
-            if (currentIndex != -1)
-            {
-                string str = (string)listBoxDisasm.Items[currentIndex];
-                listBoxDisasm.Items[currentIndex] = str.Substring(2);
-            }
-
             if (memoryAdr <= adr && adr < memoryAdr + DISASM_LEN * (thumb ? 2 : 4))
             {
-
             }
             else
             {
-                GotoWithUpdate(adr);
+                memoryAdr = adr;
             }
-
-            listBoxDisasm.SelectedIndex = (int)(adr - memoryAdr) / (thumb ? 2 : 4);
-            currentIndex = listBoxDisasm.SelectedIndex;
-            if (currentIndex != -1)
-            {
-                string str = (string)listBoxDisasm.Items[currentIndex];
-                listBoxDisasm.Items[currentIndex] = "> ";
-                listBoxDisasm.Items[currentIndex] += str;
-            }
+            UpdateDisasm();
         }
 
         private void UpdateRegisters()
@@ -221,7 +204,7 @@ namespace desdebugger
             //Console.WriteLine(request);
             var stream = client.GetStream();
             
-            var bytes = System.Text.Encoding.UTF8.GetBytes("$" + request + "#" + String.Format("{0:X2}", Checksum(request)));
+            var bytes = Encoding.UTF8.GetBytes("$" + request + "#" + String.Format("{0:X2}", Checksum(request)));
             stream.Write(bytes, 0, bytes.Length);
             var retBytes = new List<byte>();
             int c;
@@ -261,7 +244,6 @@ namespace desdebugger
                     Goto(registers[15]);
                     statusLabel.Text = "Breaked";
                     buttonContinue.Enabled = true;
-                    this.Focus();
                 }
             });
 
@@ -290,12 +272,20 @@ namespace desdebugger
         {
             uint pc = GetRegisters()[15];
             bool thumb = radioButtonThumb.Checked;
-            uint destAdr;
-            string insName;
-            getBranchAddr(pc, out destAdr, out insName);
-            Console.WriteLine(destAdr);
-            Console.WriteLine(insName);
-            if (insName == "bl" || insName == "blx")
+
+            var buf = new StringBuilder(256);
+            var ins = thumb ? GetMemory16(pc, 1)[0] : GetMemory32(pc, 1)[0];
+            if (thumb)
+            {
+                DisasmThumb(pc, ins, buf);
+            }
+            else
+            {
+                Disasm(pc, ins, buf);
+            }
+            string insName = buf.ToString().ToLower();
+
+            if (insName.StartsWith("bl"))
             {
                 uint targetPC = pc + (uint)(thumb ? 2 : 4);
                 do
@@ -312,25 +302,6 @@ namespace desdebugger
             Goto(registers[15]);
         }
 
-        private bool getBranchAddr(uint addr, out uint destAdr, out string insName)
-        {
-            var thumb = radioButtonThumb.Checked;
-            var str = CreateDisasmText(thumb, addr);
-            Console.WriteLine(str);
-            var match = System.Text.RegularExpressions.Regex.Match(str, @"^[0-9a-f]+ (b|bl|blx)(?:eq|ne|cs|cc|mi|pl|vs|vc|hi|ls|ge|lt|gt|le)? #?([0-9a-f]+)");
-            if (match.Success)
-            {
-                insName = match.Groups[1].Value;
-                destAdr = Convert.ToUInt32(match.Groups[2].Value, 16);
-                return true;
-            } else
-            {
-                insName = "";
-                destAdr = 0;
-                return false;
-            }
-        }
-
         private void buttonBp_click(object sender, EventArgs e)
         {
             statusLabel.Text = $"Set break point at {textBoxBp.Text}";
@@ -339,7 +310,7 @@ namespace desdebugger
 
         private void buttonGoto_Click(object sender, EventArgs e)
         {
-            GotoWithUpdate(Convert.ToUInt32(textBoxGoto.Text, 16));
+            Goto(Convert.ToUInt32(textBoxGoto.Text, 16));
         }
 
         private void radioButtonARM_CheckedChanged(object sender, EventArgs e)
