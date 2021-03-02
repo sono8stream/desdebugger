@@ -26,6 +26,8 @@ namespace desdebugger
 
         private Process emulatorProcess;
 
+        private bool isContinue = false;
+
         private void Form1_Load(object sender, EventArgs e)
         {
         }
@@ -40,9 +42,10 @@ namespace desdebugger
 
         private void buttonLaunch_Click(object sender, EventArgs e)
         {
-            var dialog = new OpenFileDialog() {
+            var dialog = new OpenFileDialog()
+            {
                 Filter = "Exe file (*.exe)|*.exe",
-                Title = "Open DeSmuME (only dev+ edition is supported)" 
+                Title = "Open DeSmuME (only dev+ edition is supported)"
             };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -134,6 +137,7 @@ namespace desdebugger
                 memoryAdr = adr;
             }
             UpdateDisasm();
+            listBoxDisasm.SelectedIndex = (int)(adr - memoryAdr) / (thumb ? 2 : 4);
         }
 
         private void UpdateRegisters()
@@ -191,7 +195,7 @@ namespace desdebugger
         {
             var registers = new List<uint>();
             string res = Interact("g");
-            for (int i = 0; i < res.Length / 8; i ++)
+            for (int i = 0; i < res.Length / 8; i++)
             {
                 var str = res.Substring(i * 8, 8);
                 registers.Add(Convert.ToUInt32(str.Substring(6, 2) + str.Substring(4, 2) + str.Substring(2, 2) + str.Substring(0, 2), 16));
@@ -203,23 +207,32 @@ namespace desdebugger
         {
             //Console.WriteLine(request);
             var stream = client.GetStream();
-            
+
             var bytes = Encoding.UTF8.GetBytes("$" + request + "#" + String.Format("{0:X2}", Checksum(request)));
             stream.Write(bytes, 0, bytes.Length);
+
             var retBytes = new List<byte>();
             int c;
-            stream.ReadByte();
-            stream.ReadByte();
+            c = stream.ReadByte();
+            c = stream.ReadByte();
             while ((c = stream.ReadByte()) != Convert.ToByte('#'))
             {
                 retBytes.Add((byte)c);
             }
-            stream.ReadByte();
-            stream.ReadByte();
+            c = stream.ReadByte();
+            c = stream.ReadByte();
             stream.WriteByte(Convert.ToByte('+'));
             var response = System.Text.Encoding.UTF8.GetString(retBytes.ToArray());
             //Console.WriteLine(response);
             return response;
+        }
+
+        private void Stop()
+        {
+            var stream = client.GetStream();
+            var bytes = Encoding.UTF8.GetBytes("$s#" + String.Format("{0:X2}", Checksum("?")));
+            stream.Write(bytes, 0, bytes.Length);
+            while (isContinue) { }
         }
 
         private int Checksum(string str)
@@ -235,21 +248,24 @@ namespace desdebugger
 
         private void RunEmulator()
         {
-            buttonContinue.Enabled = false;
+            isContinue = true;
+            SwitchContinue(true);
 
-            var progress = new Progress<bool>((done) => {
+            var progress = new Progress<bool>((done) =>
+            {
                 if (done)
                 {
                     UpdateRegisters();
                     Goto(registers[15]);
                     statusLabel.Text = "Breaked";
-                    buttonContinue.Enabled = true;
+                    SwitchContinue(false);
                 }
             });
 
             Action<IProgress<bool>> work = (p) =>
             {
                 Interact("c");
+                isContinue = false;
                 p.Report(true);
             };
             Task.Run(() => work(progress));
@@ -302,10 +318,9 @@ namespace desdebugger
             Goto(registers[15]);
         }
 
-        private void buttonBp_click(object sender, EventArgs e)
+        private void buttonStop_Click(object sender, EventArgs e)
         {
-            statusLabel.Text = $"Set break point at {textBoxBp.Text}";
-            Interact(String.Format("Z0,{0:x8},4", Convert.ToUInt32(textBoxBp.Text, 16)));
+            Stop();
         }
 
         private void buttonGoto_Click(object sender, EventArgs e)
@@ -346,7 +361,7 @@ namespace desdebugger
 
         private void listBoxDisasm_KeyUp(object sender, KeyEventArgs e)
         {
-            
+
         }
 
         private void listBoxDisasm_KeyDown(object sender, KeyEventArgs e)
@@ -388,11 +403,12 @@ namespace desdebugger
         private void UpdateScroolbarValue()
         {
             int value = (int)Math.Round((double)memoryAdr / MEMORY_MAX * vScrollBar1.Maximum);
-            if (vScrollBar1.Minimum <= value && value <= vScrollBar1.Maximum) {
-               vScrollBar1.Value = value;
+            if (vScrollBar1.Minimum <= value && value <= vScrollBar1.Maximum)
+            {
+                vScrollBar1.Value = value;
             }
         }
-        
+
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
             if (e.NewValue == e.OldValue)
@@ -416,15 +432,107 @@ namespace desdebugger
 
         private void buttonRemove_Click(object sender, EventArgs e)
         {
-            Interact(String.Format("z0,{0:x8},4", Convert.ToUInt32(textBoxBp.Text, 16)));
+            if (listBoxBp.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            if (isContinue)
+            {
+                Stop();
+            }
+
+            string str = (string)listBoxBp.Items[listBoxBp.SelectedIndex];
+            string condition = str.Substring(0, 7);
+            uint address = Convert.ToUInt32(str.Substring(8), 16);
+
+            switch (condition)
+            {
+                case "INSTR: ":
+                    Interact(String.Format("z0,{0:X8},4", address));
+                    break;
+                case "Write: ":
+                    Interact(String.Format("z2,{0:X8},4", address));
+                    break;
+                case "READ : ":
+                    Interact(String.Format("z3,{0:X8},4", address));
+                    break;
+            }
+            listBoxBp.Items.RemoveAt(listBoxBp.SelectedIndex);
         }
 
         private void listBoxDisasm_Resize(object sender, EventArgs e)
         {
-            if (DISASM_LEN != listBoxDisasm.Height / listBoxDisasm.ItemHeight) {
+            if (DISASM_LEN != listBoxDisasm.Height / listBoxDisasm.ItemHeight)
+            {
                 DISASM_LEN = listBoxDisasm.Height / listBoxDisasm.ItemHeight;
                 UpdateDisasm();
             }
+        }
+
+
+        /*
+         * BreakPoint types
+         * 0,1:instr_bp
+         * 2:write_bp
+         * 3:read_bp
+         * 4:access_bp
+        */
+        private void buttonInstrBp_click(object sender, EventArgs e)
+        {
+            uint address = Convert.ToUInt32(textBoxBp.Text, 16);
+            SetBreakpoint(address, BreakType.Instruction);
+        }
+
+        private void buttonWriteBp_Click(object sender, EventArgs e)
+        {
+            uint address = Convert.ToUInt32(textBoxBp.Text, 16);
+            SetBreakpoint(address, BreakType.Write);
+        }
+
+        private void buttonReadBp_Click(object sender, EventArgs e)
+        {
+            uint address = Convert.ToUInt32(textBoxBp.Text, 16);
+            SetBreakpoint(address, BreakType.Read);
+        }
+
+        private void SetBreakpoint(uint address, BreakType breakType)
+        {
+            bool continueing = isContinue;
+            if (continueing)
+            {
+                Stop();
+            }
+
+            switch (breakType)
+            {
+                case BreakType.Instruction:
+                    statusLabel.Text = $"Set instruction break point at {address:X8}";
+                    Interact(String.Format("Z0,{0:X8},4", address));
+                    listBoxBp.Items.Add($"INSTR: {address:X8}");
+                    break;
+                case BreakType.Write:
+                    statusLabel.Text = $"Set write break point at {address:X8}";
+                    Interact(String.Format("Z2,{0:X8},4", address));
+                    listBoxBp.Items.Add($"WRITE: {address:X8}");
+                    break;
+                case BreakType.Read:
+                    statusLabel.Text = $"Set read break point at {address:X8}";
+                    Interact(String.Format("Z3,{0:X8},4", address));
+                    listBoxBp.Items.Add($"READ : {address:X8}");
+                    break;
+            }
+        }
+
+        private void SwitchContinue(bool willOn)
+        {
+            buttonContinue.Enabled = !willOn;
+            buttonStop.Enabled = willOn;
+        }
+
+        private enum BreakType
+        {
+            Instruction = 0, Write, Read
         }
     }
 }
