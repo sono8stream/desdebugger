@@ -265,6 +265,7 @@
             this.listBoxDisasm.Name = "listBoxDisasm";
             this.listBoxDisasm.Size = new System.Drawing.Size(547, 439);
             this.listBoxDisasm.TabIndex = 7;
+            this.listBoxDisasm.DoubleClick += new System.EventHandler(this.listBoxDisasm_DoubleClick);
             this.listBoxDisasm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBoxDisasm_KeyDown);
             this.listBoxDisasm.Resize += new System.EventHandler(this.listBoxDisasm_Resize);
             // 

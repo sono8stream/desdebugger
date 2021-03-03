@@ -528,11 +528,27 @@ namespace desdebugger
         {
             buttonContinue.Enabled = !willOn;
             buttonStop.Enabled = willOn;
+            vScrollBar1.Enabled = !willOn;
+            buttonGoto.Enabled = !willOn;
         }
 
         private enum BreakType
         {
             Instruction = 0, Write, Read
+        }
+
+        private void listBoxDisasm_DoubleClick(object sender, EventArgs e)
+        {
+            int selectedIndex = listBoxDisasm.SelectedIndex;
+            if (selectedIndex == -1)
+            {
+                return;
+            }
+
+            string row = (string)listBoxDisasm.Items[selectedIndex];
+            bool thumb = radioButtonThumb.Checked;
+            uint addr = (uint)(memoryAdr + selectedIndex * (thumb ? 2 : 4));
+            SetBreakpoint(addr, BreakType.Instruction);
         }
     }
 }
