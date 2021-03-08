@@ -23,17 +23,48 @@ namespace desdebugger
         private System.Net.Sockets.TcpClient client;
         private uint memoryAdr;
         private uint[] registers;
+        private AutoCompleteStringCollection addressCollection;
 
         private Process emulatorProcess;
 
         private bool isContinue = false;
+        private bool onKillProcess = false;
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            textBoxBp.AutoCompleteCustomSource = addressCollection;
+            textBoxGoto.AutoCompleteCustomSource = addressCollection;
+            addressCollection = new AutoCompleteStringCollection();
+            if (Properties.Settings.Default.Addresses != null)
+            {
+                foreach (string s in Properties.Settings.Default.Addresses)
+                {
+                    addressCollection.Add(s);
+                }
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Properties.Settings.Default.Addresses = new System.Collections.Specialized.StringCollection();
+            int i = 0;
+            foreach (string s in addressCollection)
+            {
+                Properties.Settings.Default.Addresses.Add(s);
+                i++;
+                if (i >= 10)
+                {
+                    break;
+                }
+            }
+            Properties.Settings.Default.Save();
+
+            if (isContinue)
+            {
+                onKillProcess = true;
+                Stop();
+            }
+
             if (emulatorProcess != null)
             {
                 emulatorProcess.Kill();
@@ -266,7 +297,11 @@ namespace desdebugger
             {
                 Interact("c");
                 isContinue = false;
-                p.Report(true);
+
+                if (!onKillProcess)
+                {
+                    p.Report(true);
+                }
             };
             Task.Run(() => work(progress));
         }
@@ -300,8 +335,9 @@ namespace desdebugger
                 Disasm(pc, ins, buf);
             }
             string insName = buf.ToString().ToLower();
+            string insTypeName = insName.Split()[0];
 
-            if (insName.StartsWith("bl"))
+            if (insTypeName=="bl"||insTypeName=="blx")
             {
                 uint targetPC = pc + (uint)(thumb ? 2 : 4);
                 do
@@ -451,7 +487,7 @@ namespace desdebugger
                 case "INSTR: ":
                     Interact(String.Format("z0,{0:X8},4", address));
                     break;
-                case "Write: ":
+                case "WRITE: ":
                     Interact(String.Format("z2,{0:X8},4", address));
                     break;
                 case "READ : ":
@@ -522,6 +558,8 @@ namespace desdebugger
                     listBoxBp.Items.Add($"READ : {address:X8}");
                     break;
             }
+
+            textBoxBp.AutoCompleteCustomSource.Add(textBoxBp.Text);
         }
 
         private void SwitchContinue(bool willOn)

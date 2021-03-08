@@ -22,5 +22,16 @@ namespace desdebugger.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection Addresses {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["Addresses"]));
+            }
+            set {
+                this["Addresses"] = value;
+            }
+        }
     }
 }

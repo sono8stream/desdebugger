@@ -87,8 +87,8 @@
             // 
             // textBoxBp
             // 
-            this.textBoxBp.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
-            this.textBoxBp.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.RecentlyUsedList;
+            this.textBoxBp.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.textBoxBp.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.textBoxBp.Location = new System.Drawing.Point(99, 104);
             this.textBoxBp.Name = "textBoxBp";
             this.textBoxBp.Size = new System.Drawing.Size(127, 22);
@@ -106,6 +106,8 @@
             // 
             // textBoxGoto
             // 
+            this.textBoxGoto.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.textBoxGoto.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.textBoxGoto.Location = new System.Drawing.Point(554, 104);
             this.textBoxGoto.Name = "textBoxGoto";
             this.textBoxGoto.Size = new System.Drawing.Size(127, 22);
