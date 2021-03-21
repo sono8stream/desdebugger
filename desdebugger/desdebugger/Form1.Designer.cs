@@ -42,17 +42,19 @@
             this.radioButtonThumb = new System.Windows.Forms.RadioButton();
             this.buttonStepOver = new System.Windows.Forms.Button();
             this.buttonRemove = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.listViewReg = new System.Windows.Forms.ListView();
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
-            this.listBoxDisasm = new System.Windows.Forms.ListBox();
             this.statusLabel = new System.Windows.Forms.Label();
             this.buttonWriteBp = new System.Windows.Forms.Button();
             this.buttonReadBp = new System.Windows.Forms.Button();
             this.listBoxBp = new System.Windows.Forms.ListBox();
             this.buttonStop = new System.Windows.Forms.Button();
+            this.listBoxDisasm = new System.Windows.Forms.ListBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
+            this.listViewReg = new System.Windows.Forms.ListView();
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.textBoxThumb = new System.Windows.Forms.TextBox();
+            this.textBoxBin = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,7 +81,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 104);
+            this.label1.Location = new System.Drawing.Point(317, 32);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(82, 15);
             this.label1.TabIndex = 2;
@@ -89,14 +91,14 @@
             // 
             this.textBoxBp.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.textBoxBp.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.textBoxBp.Location = new System.Drawing.Point(99, 104);
+            this.textBoxBp.Location = new System.Drawing.Point(405, 29);
             this.textBoxBp.Name = "textBoxBp";
             this.textBoxBp.Size = new System.Drawing.Size(127, 22);
             this.textBoxBp.TabIndex = 3;
             // 
             // buttonInstrBp
             // 
-            this.buttonInstrBp.Location = new System.Drawing.Point(232, 104);
+            this.buttonInstrBp.Location = new System.Drawing.Point(538, 29);
             this.buttonInstrBp.Name = "buttonInstrBp";
             this.buttonInstrBp.Size = new System.Drawing.Size(90, 23);
             this.buttonInstrBp.TabIndex = 5;
@@ -108,14 +110,14 @@
             // 
             this.textBoxGoto.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.textBoxGoto.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.textBoxGoto.Location = new System.Drawing.Point(554, 104);
+            this.textBoxGoto.Location = new System.Drawing.Point(12, 105);
             this.textBoxGoto.Name = "textBoxGoto";
             this.textBoxGoto.Size = new System.Drawing.Size(127, 22);
             this.textBoxGoto.TabIndex = 7;
             // 
             // buttonGoto
             // 
-            this.buttonGoto.Location = new System.Drawing.Point(687, 104);
+            this.buttonGoto.Location = new System.Drawing.Point(145, 104);
             this.buttonGoto.Name = "buttonGoto";
             this.buttonGoto.Size = new System.Drawing.Size(63, 23);
             this.buttonGoto.TabIndex = 8;
@@ -156,7 +158,7 @@
             // 
             this.radioButtonARM.AutoSize = true;
             this.radioButtonARM.Checked = true;
-            this.radioButtonARM.Location = new System.Drawing.Point(765, 107);
+            this.radioButtonARM.Location = new System.Drawing.Point(224, 107);
             this.radioButtonARM.Name = "radioButtonARM";
             this.radioButtonARM.Size = new System.Drawing.Size(57, 19);
             this.radioButtonARM.TabIndex = 17;
@@ -168,7 +170,7 @@
             // radioButtonThumb
             // 
             this.radioButtonThumb.AutoSize = true;
-            this.radioButtonThumb.Location = new System.Drawing.Point(828, 108);
+            this.radioButtonThumb.Location = new System.Drawing.Point(287, 107);
             this.radioButtonThumb.Name = "radioButtonThumb";
             this.radioButtonThumb.Size = new System.Drawing.Size(71, 19);
             this.radioButtonThumb.TabIndex = 18;
@@ -188,7 +190,7 @@
             // 
             // buttonRemove
             // 
-            this.buttonRemove.Location = new System.Drawing.Point(940, 106);
+            this.buttonRemove.Location = new System.Drawing.Point(594, 103);
             this.buttonRemove.Name = "buttonRemove";
             this.buttonRemove.Size = new System.Drawing.Size(148, 23);
             this.buttonRemove.TabIndex = 21;
@@ -196,25 +198,99 @@
             this.buttonRemove.UseVisualStyleBackColor = true;
             this.buttonRemove.Click += new System.EventHandler(this.buttonRemove_Click);
             // 
+            // statusLabel
+            // 
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Location = new System.Drawing.Point(12, 588);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(86, 15);
+            this.statusLabel.TabIndex = 23;
+            this.statusLabel.Text = "Status Label";
+            // 
+            // buttonWriteBp
+            // 
+            this.buttonWriteBp.Location = new System.Drawing.Point(634, 28);
+            this.buttonWriteBp.Name = "buttonWriteBp";
+            this.buttonWriteBp.Size = new System.Drawing.Size(90, 23);
+            this.buttonWriteBp.TabIndex = 24;
+            this.buttonWriteBp.Text = "Set Write";
+            this.buttonWriteBp.UseVisualStyleBackColor = true;
+            this.buttonWriteBp.Click += new System.EventHandler(this.buttonWriteBp_Click);
+            // 
+            // buttonReadBp
+            // 
+            this.buttonReadBp.Location = new System.Drawing.Point(730, 28);
+            this.buttonReadBp.Name = "buttonReadBp";
+            this.buttonReadBp.Size = new System.Drawing.Size(90, 23);
+            this.buttonReadBp.TabIndex = 25;
+            this.buttonReadBp.Text = "Set Read";
+            this.buttonReadBp.UseVisualStyleBackColor = true;
+            this.buttonReadBp.Click += new System.EventHandler(this.buttonReadBp_Click);
+            // 
+            // listBoxBp
+            // 
+            this.listBoxBp.FormattingEnabled = true;
+            this.listBoxBp.ItemHeight = 15;
+            this.listBoxBp.Location = new System.Drawing.Point(594, 132);
+            this.listBoxBp.Name = "listBoxBp";
+            this.listBoxBp.Size = new System.Drawing.Size(226, 439);
+            this.listBoxBp.TabIndex = 26;
+            // 
+            // buttonStop
+            // 
+            this.buttonStop.Location = new System.Drawing.Point(365, 54);
+            this.buttonStop.Name = "buttonStop";
+            this.buttonStop.Size = new System.Drawing.Size(111, 33);
+            this.buttonStop.TabIndex = 27;
+            this.buttonStop.Text = "Stop";
+            this.buttonStop.UseVisualStyleBackColor = true;
+            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
+            // 
+            // listBoxDisasm
+            // 
+            this.listBoxDisasm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBoxDisasm.FormattingEnabled = true;
+            this.listBoxDisasm.ItemHeight = 15;
+            this.listBoxDisasm.Location = new System.Drawing.Point(3, 3);
+            this.listBoxDisasm.Name = "listBoxDisasm";
+            this.listBoxDisasm.Size = new System.Drawing.Size(327, 439);
+            this.listBoxDisasm.TabIndex = 7;
+            this.listBoxDisasm.DoubleClick += new System.EventHandler(this.listBoxDisasm_DoubleClick);
+            this.listBoxDisasm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBoxDisasm_KeyDown);
+            this.listBoxDisasm.Resize += new System.EventHandler(this.listBoxDisasm_Resize);
+            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel1.Controls.Add(this.listViewReg, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.vScrollBar1, 0, 0);
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 21F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.tableLayoutPanel1.Controls.Add(this.vScrollBar1, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.listViewReg, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.listBoxDisasm, 0, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 133);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 449F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(810, 449);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(576, 449);
             this.tableLayoutPanel1.TabIndex = 22;
+            // 
+            // vScrollBar1
+            // 
+            this.vScrollBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.vScrollBar1.Location = new System.Drawing.Point(333, 0);
+            this.vScrollBar1.Maximum = 1000;
+            this.vScrollBar1.Name = "vScrollBar1";
+            this.vScrollBar1.Size = new System.Drawing.Size(21, 449);
+            this.vScrollBar1.TabIndex = 21;
+            this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
             // 
             // listViewReg
             // 
@@ -225,9 +301,9 @@
             this.columnHeader2,
             this.columnHeader1});
             this.listViewReg.HideSelection = false;
-            this.listViewReg.Location = new System.Drawing.Point(576, 3);
+            this.listViewReg.Location = new System.Drawing.Point(357, 3);
             this.listViewReg.Name = "listViewReg";
-            this.listViewReg.Size = new System.Drawing.Size(231, 443);
+            this.listViewReg.Size = new System.Drawing.Size(216, 443);
             this.listViewReg.TabIndex = 22;
             this.listViewReg.UseCompatibleStateImageBehavior = false;
             this.listViewReg.View = System.Windows.Forms.View.Details;
@@ -244,86 +320,30 @@
             this.columnHeader1.DisplayIndex = 0;
             this.columnHeader1.Text = "No.";
             // 
-            // vScrollBar1
+            // textBoxThumb
             // 
-            this.vScrollBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.vScrollBar1.Location = new System.Drawing.Point(553, 0);
-            this.vScrollBar1.Maximum = 1000;
-            this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(20, 449);
-            this.vScrollBar1.TabIndex = 21;
-            this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
+            this.textBoxThumb.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.textBoxThumb.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.textBoxThumb.Location = new System.Drawing.Point(826, 132);
+            this.textBoxThumb.Name = "textBoxThumb";
+            this.textBoxThumb.Size = new System.Drawing.Size(268, 22);
+            this.textBoxThumb.TabIndex = 28;
+            this.textBoxThumb.TextChanged += new System.EventHandler(this.textBoxThumb_TextChanged);
             // 
-            // listBoxDisasm
+            // textBoxBin
             // 
-            this.listBoxDisasm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBoxDisasm.FormattingEnabled = true;
-            this.listBoxDisasm.ItemHeight = 15;
-            this.listBoxDisasm.Location = new System.Drawing.Point(3, 3);
-            this.listBoxDisasm.Name = "listBoxDisasm";
-            this.listBoxDisasm.Size = new System.Drawing.Size(547, 439);
-            this.listBoxDisasm.TabIndex = 7;
-            this.listBoxDisasm.DoubleClick += new System.EventHandler(this.listBoxDisasm_DoubleClick);
-            this.listBoxDisasm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBoxDisasm_KeyDown);
-            this.listBoxDisasm.Resize += new System.EventHandler(this.listBoxDisasm_Resize);
-            // 
-            // statusLabel
-            // 
-            this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(12, 588);
-            this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(86, 15);
-            this.statusLabel.TabIndex = 23;
-            this.statusLabel.Text = "Status Label";
-            // 
-            // buttonWriteBp
-            // 
-            this.buttonWriteBp.Location = new System.Drawing.Point(328, 103);
-            this.buttonWriteBp.Name = "buttonWriteBp";
-            this.buttonWriteBp.Size = new System.Drawing.Size(90, 23);
-            this.buttonWriteBp.TabIndex = 24;
-            this.buttonWriteBp.Text = "Set Write";
-            this.buttonWriteBp.UseVisualStyleBackColor = true;
-            this.buttonWriteBp.Click += new System.EventHandler(this.buttonWriteBp_Click);
-            // 
-            // buttonReadBp
-            // 
-            this.buttonReadBp.Location = new System.Drawing.Point(424, 103);
-            this.buttonReadBp.Name = "buttonReadBp";
-            this.buttonReadBp.Size = new System.Drawing.Size(90, 23);
-            this.buttonReadBp.TabIndex = 25;
-            this.buttonReadBp.Text = "Set Read";
-            this.buttonReadBp.UseVisualStyleBackColor = true;
-            this.buttonReadBp.Click += new System.EventHandler(this.buttonReadBp_Click);
-            // 
-            // listBoxBp
-            // 
-            this.listBoxBp.FormattingEnabled = true;
-            this.listBoxBp.ItemHeight = 15;
-            this.listBoxBp.Location = new System.Drawing.Point(828, 133);
-            this.listBoxBp.Name = "listBoxBp";
-            this.listBoxBp.Size = new System.Drawing.Size(260, 439);
-            this.listBoxBp.TabIndex = 26;
-            // 
-            // buttonStop
-            // 
-            this.buttonStop.Location = new System.Drawing.Point(365, 54);
-            this.buttonStop.Name = "buttonStop";
-            this.buttonStop.Size = new System.Drawing.Size(111, 33);
-            this.buttonStop.TabIndex = 27;
-            this.buttonStop.Text = "Stop";
-            this.buttonStop.UseVisualStyleBackColor = true;
-            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
+            this.textBoxBin.Location = new System.Drawing.Point(1100, 132);
+            this.textBoxBin.Name = "textBoxBin";
+            this.textBoxBin.Size = new System.Drawing.Size(138, 22);
+            this.textBoxBin.TabIndex = 29;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1166, 612);
+            this.ClientSize = new System.Drawing.Size(1253, 612);
+            this.Controls.Add(this.textBoxBin);
+            this.Controls.Add(this.textBoxThumb);
             this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.listBoxBp);
             this.Controls.Add(this.buttonReadBp);
@@ -370,17 +390,19 @@
         private System.Windows.Forms.RadioButton radioButtonThumb;
         private System.Windows.Forms.Button buttonStepOver;
         private System.Windows.Forms.Button buttonRemove;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.ListView listViewReg;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.VScrollBar vScrollBar1;
-        private System.Windows.Forms.ListBox listBoxDisasm;
         private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.Button buttonWriteBp;
         private System.Windows.Forms.Button buttonReadBp;
         private System.Windows.Forms.ListBox listBoxBp;
         private System.Windows.Forms.Button buttonStop;
+        private System.Windows.Forms.ListBox listBoxDisasm;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.VScrollBar vScrollBar1;
+        private System.Windows.Forms.ListView listViewReg;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.TextBox textBoxThumb;
+        private System.Windows.Forms.TextBox textBoxBin;
     }
 }
 

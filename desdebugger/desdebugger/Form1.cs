@@ -30,11 +30,14 @@ namespace desdebugger
         private bool isContinue = false;
         private bool onKillProcess = false;
 
+        private Dictionary<string, uint> thumbDict = new Dictionary<string, uint>();
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            addressCollection = new AutoCompleteStringCollection();
             textBoxBp.AutoCompleteCustomSource = addressCollection;
             textBoxGoto.AutoCompleteCustomSource = addressCollection;
-            addressCollection = new AutoCompleteStringCollection();
+            //textBoxAsm.AutoCompleteCustomSource = addressCollection;
             if (Properties.Settings.Default.Addresses != null)
             {
                 foreach (string s in Properties.Settings.Default.Addresses)
@@ -42,6 +45,11 @@ namespace desdebugger
                     addressCollection.Add(s);
                 }
             }
+
+            thumbDict = ThumbTable.GetTable();
+            var list = new List<string>(thumbDict.Keys);
+            textBoxThumb.AutoCompleteCustomSource = new AutoCompleteStringCollection();
+            textBoxThumb.AutoCompleteCustomSource.AddRange(list.ToArray());
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -559,7 +567,7 @@ namespace desdebugger
                     break;
             }
 
-            textBoxBp.AutoCompleteCustomSource.Add(textBoxBp.Text);
+            addressCollection.Add(textBoxBp.Text);
         }
 
         private void SwitchContinue(bool willOn)
@@ -587,6 +595,14 @@ namespace desdebugger
             bool thumb = radioButtonThumb.Checked;
             uint addr = (uint)(memoryAdr + selectedIndex * (thumb ? 2 : 4));
             SetBreakpoint(addr, BreakType.Instruction);
+        }
+
+        private void textBoxThumb_TextChanged(object sender, EventArgs e)
+        {
+            if(thumbDict.ContainsKey(textBoxThumb.Text))
+            {
+                textBoxBin.Text = thumbDict[textBoxThumb.Text].ToString("x");
+            }
         }
     }
 }

@@ -19,7 +19,6 @@ void DisasmThumb(u32 adr, u32 ins, char *str)
 }
 
 
-
 void Hoge(char *str)
 {
 	str[0] = 'H';
